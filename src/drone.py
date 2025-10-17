@@ -5,9 +5,7 @@ import matplotlib.pyplot as plt
 
 
 class Car:
-    def __init__(self, w_power,w_time,d_0, mass,v_min,v_max,reaction_time, follow):
-        self.P_R : List = []
-        self.P_L : List = []
+    def __init__(self, w_power,w_time,d_0, mass, water_min, water_max,v_min,v_max,reaction_time, follow):
         self.w_power = w_power
         self.w_time = w_time
         self.d_0 = d_0
@@ -16,19 +14,45 @@ class Car:
         self.v_max = v_max
         self.r_t =reaction_time
         self.follow = follow
+        self.g = 9.81  
+        self.rho = 1.225           # Air thicknes  (kg/m^3)
+
+    def P_drone(self, drone_effizency, front_windshield, C_D):
+  
+        P=[] 
+        P_h = []
+        for m in self.mass  :       
+            F_g = m * self.g
+            P_h.append(F_g / drone_effizency)
+
+     
+        
+        for v in range(self.v_min, self.v_max+1):
+            v= v/3.6
+
+            F_Air = 0.5 * self.rho * front_windshield * C_D * (v ** 2)
+            
+            P_Vertical = F_Air * v
+
+            P.append(P_hover + P_Vertical)
+
+        return P_hover, P
 
 
-    def PR_calc(self, drive_v_max: int) -> List[float]:
-        PR = []
+    def SOC_calc(self,P, capacity):
+
+    def Phover_calc(self, drone_effizency , drive_v_max: int) -> List[float]:
+        PH = []
+        F= self.mass * self.g
         for v in range(self.v_min, self.v_max+1):
             
-            p_r = 0.006 * self.mass * 9.81 * (v / 3.6) 
-            PR.append(p_r)
+            p_h = F / drone_effizency 
+            PH.append(p_h)
             # print(f"{p_r}, {v}")
 
-        PR.append(0.006 * self.mass * 9.81 * drive_v_max / 3.6)
+        PH.append(0.006 * self.mass * 9.81 * drive_v_max / 3.6)
         # print (f"This is P_R: {PR} at ")
-        return PR
+        return PH
 
     def PL_calc(self,flight_dist, drive_v_max: int) -> List[float]:
         rho_s=1.225
@@ -40,9 +64,9 @@ class Car:
         zeta = 0.03
         Omega =150
         mass = 125 # kg
-        W = mass * 9.81
+        F = mass * self.g
         U_tip = Omega * R  
-        p_i = (1 + k1) * (W**1.5) / np.sqrt(2 * rho_s * A)
+        p_i = (1 + k1) * (F**1.5) / np.sqrt(2 * rho_s * A)
         p_0 = (zeta / 8) * rho_s* A * Omega**3 * R**3
         PL = []
         d_0 = 0.1
