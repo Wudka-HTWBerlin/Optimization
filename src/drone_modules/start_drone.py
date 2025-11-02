@@ -2,7 +2,7 @@ from drone_modules.drone import Drone, DroneCoopMath
 from drone_modules.swarm import Optimization
 from drone_modules.los_calc import DroneCalculation
 
-def start_car(car_configs, flying_distance):
+def start_drone(car_configs, flying_distance):
     driving_distance = 100 # km
     water_min = 20 # l
     water_max = 50 # l

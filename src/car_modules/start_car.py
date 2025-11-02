@@ -16,10 +16,10 @@ def start_car(car_configs, driving_distance):
     opt = Optimization() 
     for i, cfg in enumerate(car_configs):
         car = Car(**cfg)
-        speed_list = list(range(car.drive_v_min, car.drive_v_max+1))
+        speed_list = list(range(car.v_min, car.v_max+1))
         time_loss = calc.time_los_calc(car.v_min, car.v_max, driving_distance)
-        car.P_R = car.PR_calc(drive_v_max=car.drive_v_max)
-        car.P_L = car.PL_calc(drive_v_max=car.drive_v_max)
+        car.P_R = car.PR_calc(drive_v_max=car.v_max)
+        car.P_L = car.PL_calc(drive_v_max=car.v_max)
 
         P_red = calc.P_reduction_calc(car.P_L, car.P_R)
         

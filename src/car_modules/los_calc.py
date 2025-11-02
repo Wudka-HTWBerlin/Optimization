@@ -24,16 +24,16 @@ class Calculation:
         # print(f"length of time {len(time_los)}")
         return time_los
 
-    def P_reduction_calc(self, PL: List[float], PR: List[float]) -> List[float]:
+    def P_reduction_calc(self, Ph: List[float], Pv: List[float]) -> List[float]:
         P=[]
-        if len(PL) != len(PR):
+        if len(Ph) != len(Pv):
             # print("Size of PL and PR are differing")
             # print(f"PL_size = {len(PL)}")
             # print(f"PR_size = {len(PR)}")
             return [0.0]
         
-        for pl, pr in zip(PL, PR):
-            P.append(pl + pr)
+        for ph, pv in zip(Ph, Pv):
+            P.append(ph + pv)
         P_max = max(P)
         P.remove(P_max)
 

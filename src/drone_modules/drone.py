@@ -19,11 +19,11 @@ class Drone:
                   reaction_time,
                   follow ,
                   power_efficency,
-                  wind_direction,
                   A_drone,
                   total_numbers,
-                  V_shape):
-        
+                  V_shape,
+                  wind_direction):
+       
         self_P_h : List = []
         self_P_v : List = []
         self.w_power = w_power
@@ -34,9 +34,15 @@ class Drone:
         self.v_max = v_max
         self.r_t =reaction_time
         self.follow = follow
-        
-        self.g = 9.81      
+
+        ## Drone specifications
+        self.delta = 0.012 # profile drag coefficent
+        self.s_bl= 0.15 #middle Solidity 0.1 bis 0.25
+        self.C_T = 0.09   #0.08 bis 0.15 thrust coefficent
+        self.k = 0.11 # Incremental correction factor to induced power
+        self.g = 9.81      #m/s^2
         self.rho = 1.225   # Air thicknes  (kg/m^3)
+        self.R_bl= 0.5      # m
         self.phi =wind_direction   #wind direction in degrees
         self.p_eff= power_efficency 
         self.total_numbers = total_numbers #drone power efficiency 
@@ -83,21 +89,18 @@ class Drone:
 
     def P_hover(self, water_min, water_max) -> List[float]:
         P_h = []
+        n=4
+        A_bl= self.R_bl^2 *math.pi 
+        
         for water in range (water_min, water_max):       
             F_g = (water+self.mass) * self.g
-            P_h.append(F_g/self.p_eff )
+            p_bl = F_g^(3/2)/(math.sqrt(n*self.rho*A_bl) )*self.C_T^(-3/2) *self.delta/8 * self.s_bl  
+            p_in = (1+self.k)*(F_g^(3/2)/(math.sqrt(2*self.rho*A_bl)))
+            P_h.append(p_bl+p_in )
 
-        return P_h
+        return P_h, P_bl
     
-    def P(self, P_hover, P_vert):
-        P=[]
-        for p_v in P_vert:
-            p=[]
-            for p_h in P_hover:
-                p.append(p_v+p_h)
-            P.append(p)
-        return P
-    
+  
     def SOC_calc(self,P, capacity):
         SOC= []
         #nicht nützlich da keine auswirkung auf die Optimierung da sich dieser Wert aus der entnommen Leistung ergibt 
@@ -146,7 +149,7 @@ class DroneCoopMath:
             print("No loss data provided.")
             return []
 
-        # Prüfe, ob alle Loss-Listen die gleiche Länge haben
+        # proof that all list have the same length
         length = len(all_losses[0])
         if not all(len(losses) == length for losses in all_losses):
             print("Loss vector sizes are differing")
