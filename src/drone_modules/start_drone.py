@@ -2,10 +2,9 @@ from drone_modules.drone import Drone, DroneCoopMath
 from drone_modules.swarm import Optimization
 from drone_modules.los_calc import DroneCalculation
 
-def start_drone(car_configs, flying_distance):
+def start_drone(drone_configs, flying_distance):
     driving_distance = 100 # km
-    water_min = 20 # l
-    water_max = 50 # l
+   
 
     v_wind = 10 #m/s
     wind_direction = 0 #°  North= 0° East=90°
@@ -21,17 +20,17 @@ def start_drone(car_configs, flying_distance):
     calc = DroneCalculation()
     opt = Optimization() 
 
-    for i, cfg in enumerate(car_configs):
+    for i, cfg in enumerate(drone_configs):
         drone = Drone(**cfg)
 
-        speed_list = list(range(drone.drive_v_min, drone.drive_v_max+1))
+        speed_list = list(range(drone.v_min, drone.v_max+1))
         time_loss = calc.time_los_calc(drone.v_min, drone.v_max, flying_distance)
-        drone.P_h = drone.P_hover(water_max=water_max, water_min=water_min)
+        drone.P_h = drone.P_hover()
         drone.P_v = drone.P_vertical(v_w=v_wind, phi=wind_direction)
 
         P_red = calc.P_reduction_calc(drone.P_h, drone.P_v)
         
-        achieve = opt.Achievment(P_red, time_loss, Drone.w_power, Drone.w_time)
+        achieve = opt.Achievment(P_red, time_loss, drone.w_power, drone.w_time)
         losses = opt.Optimization_losses(achieve)
 
         all_achives.append(achieve)

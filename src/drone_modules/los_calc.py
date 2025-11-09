@@ -1,4 +1,5 @@
 from typing import List
+import numpy as np
 
 class DroneCalculation:
     def __init__(self):
@@ -8,13 +9,11 @@ class DroneCalculation:
     def time_los_calc(self, v_min: int, v_max: int,  drive_distance: float, ) -> List[float]:
         
         time_los = []
-        v_max_avg= -0.0088853 * v_max ** 2 + 2.66526 * v_max - 77.2296
-        v_min_avg= -0.0088853 * v_min ** 2 + 2.66526 * v_min - 77.2296
-        t_min = drive_distance / v_max_avg
-        for v in range(v_min, v_max + 1):
+        t_min = drive_distance / v_max
+        
+        for v in range(v_min, v_max):
             
-            v_avarage = v #stammt aus paper zur durchschnittsgeschwindigkeit auf Autobahnen je nach Geschwindigkeit
-            # print(f"speed:{v}, speed avarage {v_avarage} ")
+            v_avarage = v 
             if v_avarage == 0:
                 time_los.append(0.0)
                 continue
@@ -24,21 +23,27 @@ class DroneCalculation:
         # print(f"length of time {len(time_los)}")
         return time_los
 
-    def P_reduction_calc(self, PL: List[float], PR: List[float]) -> List[float]:
+    def P_reduction_calc(self, Ph: List[float], Pv: List[float]) -> List[float]:
         P=[]
-        if len(PL) != len(PR):
-            # print("Size of PL and PR are differing")
-            # print(f"PL_size = {len(PL)}")
-            # print(f"PR_size = {len(PR)}")
-            return [0.0]
+        # if len(Ph) != len(Pv):
+        #     print("Size of PL and PR are differing")
+        #     print(f"Ph_size = {len(Ph)}")
+        #     print(f"Pv_size = {len(Pv)}")
+        #     return [0.0]
+        for pv in Pv:
+            new_line = []
+            for ph in Ph:
+                sum = pv + ph
+                new_line.append(sum)
+            P.append(new_line)
         
-        for pl, pr in zip(PL, PR):
-            P.append(pl + pr)
+        # for ph, pv in zip(Ph, Pv):
+        #     P.append(ph + pv)
         P_max = max(P)
         P.remove(P_max)
 
         if P_max == 0:
             return [0.0 for _ in P]
-
-        P_reduction = [1 - p / P_max for p in P]
+        P_reduction =1 - (np.array(P)/ P_max )
+        # P_reduction =[ [1 - p / P_max for p in row] for row in P]
         return P_reduction

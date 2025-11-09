@@ -1,6 +1,6 @@
 # === Verarbeitungsschritte für alle Fahrzeuge ===
 from car_modules.car import Car , CarCoopMath
-from car_modules.los_calc import Calculation
+from car_modules.los_calc import CarCalculation
 from optimization import Optimization
 
 def start_car(car_configs, driving_distance):
@@ -12,7 +12,7 @@ def start_car(car_configs, driving_distance):
     all_losses = []
     data_names = []
     all_achives = []
-    calc = Calculation()
+    calc = CarCalculation()
     opt = Optimization() 
     for i, cfg in enumerate(car_configs):
         car = Car(**cfg)
