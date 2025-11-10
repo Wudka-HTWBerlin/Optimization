@@ -127,31 +127,32 @@ class DroneCoopMath:
         #x = speed
         #y=mass
         #z=time
+        # --- 2. 3D Plot erstellen ---
+        fig = plt.figure(figsize=(12, 10))
+        ax = fig.add_subplot(111, projection='3d')
         for achives in  all_achives:
             
             x_coords_achieves = np.arange(achives.shape[0])
             z_coords_achieves = np.arange(achives.shape[1])
-            X_achives, Z_achives = np.meshgrid(x_coords_achieves, z_coords_achieves)
+            X_achives, Z_achives = np.meshgrid(z_coords_achieves, x_coords_achieves)
 
-            # --- 2. 3D Plot erstellen ---
-            fig = plt.figure(figsize=(12, 10))
-            ax = fig.add_subplot(111, projection='3d')
+            
 
-            surf = ax.plot_surface(X_achives, Z_achives, achives, 
+            surf = ax.plot_surface(Z_achives, X_achives, achives, 
                        cmap='viridis', # Farbschema
                        rstride=1, cstride=1, # Steuerungen für Detailgrad
                        antialiased=False)
             
             # 3. Beschriftungen und Farbleiste
-            ax.set_xlabel('mass')
-            ax.set_zlabel('speed')
-            ax.set_ylabel('achievement')
-            ax.set_title('3D Oberfläche: X, Z bestimmen Position, Y ist Wert')
+            
 
             # Farbleiste für die Y-Werte
             fig.colorbar(surf, shrink=0.6, aspect=20, label='Y-Wert')
-
-            plt.show()
+        ax.set_xlabel('mass')
+        ax.set_zlabel('speed')
+        ax.set_ylabel('achievement')
+        ax.set_title('3D Oberfläche: X, Z bestimmen Position, Y ist Wert')
+        plt.show()
                         
                         
 
