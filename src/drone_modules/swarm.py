@@ -17,14 +17,14 @@ class Optimization:
         gen_weight = max(P_weight, t_weight)
         # Calc_result = []
 
-
-
-        
         t = t_weight * np.array(t_opt)/ gen_weight 
         t_new= t[:,np.newaxis] # change to row vector
         P= P_weight* P_opt / gen_weight
 
         Calc_result = P+t_new 
+
+
+        
         # Calc_result.append(value)
 
         return Calc_result
@@ -32,5 +32,6 @@ class Optimization:
     def Optimization_losses(self, Achievemnt_system):
         max_value = np.max(Achievemnt_system)
         # losses = max_value - val for val in Achievemnt_system
-        losses = -Achievemnt_system + max_value
+        losses = max_value - Achievemnt_system
+        
         return losses

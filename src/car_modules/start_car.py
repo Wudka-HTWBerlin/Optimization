@@ -2,7 +2,7 @@
 from car_modules.car import Car , CarCoopMath
 from car_modules.los_calc import CarCalculation
 from optimization import Optimization
-
+import numpy as np
 def start_car(car_configs, driving_distance):
    
     data_names = ["system1", "system2", "system3", "speed"]
@@ -36,13 +36,14 @@ def start_car(car_configs, driving_distance):
     ccm.file_output(all_losses,all_achives, speed_list, "LossesAll", data_names)
 
     # performance = ccm.performance_values(losses1, losses2, losses3)
-    performance = ccm.performance_values(all_losses)
-    if performance:
-        min_index = performance.index(min(performance))
-        best_speed = speed_list[min_index]
-        print(f"\n🚗 The cars should drive with a speed of {best_speed} km/h")
-        for name, losses in zip(data_names, all_losses):
-            print(f"Loss for {name}: {losses[min_index]:.2f}")
+    performance = ccm.performance_values(all_achives)
+    # if performance:
+    
+    min_index = np.argmin(performance)
+    best_speed = speed_list[min_index]
+    print(f"\n🚗 The cars should drive with a speed of {best_speed} km/h")
+    for name, losses in zip(data_names, all_losses):
+        print(f"Loss for {name}: {losses[min_index]:.2f}")
 
-    else:
-        print("No valid performance data found.")
+    # else:
+    #     print("No valid performance data found.")

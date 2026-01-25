@@ -65,8 +65,8 @@ class CarCoopMath:
         for achives, label in zip(all_achives, data_names):
             plt.plot(speeds, achives, label=label)
         plt.xlabel("Speed (km/h)")
-        plt.ylabel("Loss (%)")
-        plt.title("Losses for all systems")
+        plt.ylabel("achive (%)")
+        plt.title("Achives for all systems")
         plt.legend()
         plt.grid(True)
         plt.tight_layout()
@@ -85,22 +85,23 @@ class CarCoopMath:
         plt.show()
     
     
-    def performance_values(self, all_losses: List[List[float]]) -> List[float]:
-        if not all_losses:
+    def performance_values(self, all_data: List[List[float]]):
+        if not all_data:
             print("No loss data provided.")
             return []
 
         # Prüfe, ob alle Loss-Listen die gleiche Länge haben
-        length = len(all_losses[0])
-        if not all(len(losses) == length for losses in all_losses):
+        length = len(all_data[0])
+        if not all(len(losses) == length for losses in all_data):
             print("Loss vector sizes are differing")
-            for idx, losses in enumerate(all_losses):
+            for idx, losses in enumerate(all_data):
                 print(f"losses{idx+1} size= {len(losses)}")
             return [0] * length
 
         # Summiere für jeden Geschwindigkeitsindex die Verluste aller Systeme
         performance_vector = []
-        for losses_at_speed in zip(*all_losses):  # Transponiert -> [(l1_1, l2_1, ..., ln_1), ..., (l1_n, ..., ln_n)]
-            performance_vector.append(sum(losses_at_speed))
+        performance_vector=np.sum(all_data, axis =0)
+        # for losses_at_speed in zip(*all_losses):  # Transponiert -> [(l1_1, l2_1, ..., ln_1), ..., (l1_n, ..., ln_n)]
+        #     performance_vector.append(sum(losses_at_speed))
 
         return performance_vector
