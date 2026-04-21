@@ -3,6 +3,10 @@ from car_modules.car import Car , CarCoopMath
 from car_modules.los_calc import CarCalculation
 from optimization import Optimization
 import numpy as np
+
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.ndimage import gaussian_filter
 def start_car(car_configs, driving_distance):
    
     data_names = ["system1", "system2", "system3", "speed"]
@@ -33,12 +37,30 @@ def start_car(car_configs, driving_distance):
 
     # === Coop/Decision ===
     ccm = CarCoopMath()
-    ccm.file_output(all_losses,all_achives, speed_list, "LossesAll", data_names)
+    ccm.file_output(all_losses,all_achives, speed_list, "All", data_names)
 
     # performance = ccm.performance_values(losses1, losses2, losses3)
     performance = ccm.performance_values(all_achives)
+    plt.plot(speed_list, performance)
+    plt.xlabel("Speed [km/h]")
+    plt.ylabel("Objective value")
+    plt.title("Objective values for all systems")
+    
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("sum_objective_values.png")
+    plt.show()
     # if performance:
     
+   
+    
+    # min_index, max_index=turning_point(performance)
+    # best_speed_min = speed_list[min_index]
+    # best_speed_max = speed_list[max_index]
+
+    # print(f"\n🚗 The cars should drive with a speed of {best_speed_min} km/h")
+    # print(f"\n🚗 The cars should drive with a speed of {best_speed_max} km/h")
+
     min_index = np.argmin(performance)
     best_speed = speed_list[min_index]
     print(f"\n🚗 The cars should drive with a speed of {best_speed} km/h")
@@ -47,3 +69,18 @@ def start_car(car_configs, driving_distance):
 
     # else:
     #     print("No valid performance data found.")
+
+# def turning_point(function):
+#     A_smooth = gaussian_filter(function, sigma=1.0)
+
+#     Ax = np.gradient(A_smooth)
+#     Axx = np.gradient(Ax)
+#     Laplacian = Axx
+#     min_laplace_index = np.argmin(np.abs(Laplacian))
+#     print(f"Index mit minimaler Krümmung: {min_laplace_index}")
+#     max_laplace_index = np.argmax(np.abs(Laplacian))
+#     print(f"Index mit maximaler Krümmung: {max_laplace_index}")
+
+
+
+#     return min_laplace_index, max_laplace_index

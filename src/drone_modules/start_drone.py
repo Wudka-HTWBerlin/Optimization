@@ -27,7 +27,7 @@ def start_drone(drone_configs, flying_distance, w_direction, w_speed ):
 
     opt = Optimization() 
 
-    ccm = DroneCoopMath(plot_2D=False, plot_3D=False)
+    ccm = DroneCoopMath(plot_2D=False, plot_3D=True)
 
     for cfg in drone_configs:
         drone = Drone(**cfg)
@@ -45,47 +45,55 @@ def start_drone(drone_configs, flying_distance, w_direction, w_speed ):
         P_red = calc.P_reduction_calc(drone.P_h, drone.P_v)
         
         achieve = opt.Achievment(P_red, time_loss, drone.w_power, drone.w_time)
-        losses = opt.Optimization_losses(achieve)
+        # losses = opt.Optimization_losses(achieve)
 
         predu.append(phred)
         all_achives.append(achieve)
-        all_losses.append(losses)
+        # all_losses.append(losses)
         
 
-    ccm.plot_data_2D_from_2d(data_names,predu, True, "ph_redu")
-    ccm.plot_data_2D_from_2d(data_names ,PH,True, "PH all drones")
+    # ccm.plot_data_2D_from_2d(data_names,predu, True, "ph_redu")
+    # ccm.plot_data_2D_from_2d(data_names ,PH,True, "PH all drones")
 
     # === Coop/Decision ===
     
     # ccm.file_output(all_losses, "LossesAll", data_names)
-    # ccm.file_output(all_achives, "LossesAll", data_names)
+    ccm.file_output(all_achives, "All drones objective values", data_names)
 
     # performance = ccm.performance_values(losses1, losses2, losses3)
     sum_ph = ccm.sum_array(PH)
     sum_array = ccm.sum_array(all_achives)
-    ccm.plot_data_2D_from_2d(data_names="PH",data=sum_ph,threeD_list=False, title="sum_PH")
-    ccm.plot_data_2D(data_names, all_achives, title="all_achives")
-    ccm.plot_data_3D(sum_array, "LossesAll", "performance data")
+    # ccm.plot_data_2D_from_2d(data_names="PH",data=sum_ph,threeD_list=False, title="sum_PH")
+    # ccm.plot_data_2D(data_names, all_achives, title="Optimization 2D")
+    ccm.plot_data_3D(sum_array, "Optimization 3D", "Fire fighting drone optimization values (Sum all drones)")
     turning_point_speed, turning_point_mass=ccm.turning_point(sum_array)
+    
+    # flat_index = np.argmin(sum_array)
+    # np.argmin(flat_index)
+    # turning_point_speed, turning_point_mass = np.unravel_index(flat_index, sum_array.shape)
 
 
-    print(f"Position (Zeile, Spalte): ({turning_point_speed}, {turning_point_mass})")
+    # print(f"Position (Zeile, Spalte): ({turning_point_speed}, {turning_point_mass})")
     # min_index = performance.index(min(performance))
     best_speed = speed_list[turning_point_speed]
-    water_mass = turning_point_mass + 20
+    water_mass = np.int16(turning_point_mass) + 20
+    
+    all_losses = opt.Optimization_losses(all_achives)
     
     set_speed, inex_drones = constraints(len(drone_configs), flying_distance, water_mass, best_speed )
     if inex_drones<0:
 
-        ex_system=exclude_systems(abs(inex_drones), all_losses, speed_list.index(set_speed), turning_point_mass )
+        ex_system=exclude_systems(abs(inex_drones), all_losses, turning_point_speed, turning_point_mass )
 
-    print(f" The drones should fly with a speed of {set_speed} km/h and using a water mass of {water_mass}l ")
+    print(f"The drones should fly with a speed of {set_speed} km/h and using a water mass of {water_mass}l ")
     
     for idx, (name, loss) in enumerate(zip(data_names, all_losses)):
-        if idx in ex_system:
-            print(f"Skipping {name}: System is excluded and had a loss of {loss[speed_list.index(set_speed)][turning_point_mass]:.5f}")
-            continue  # Skip to the next system
-        else:
-            print(f"Loss for {name}: {loss[speed_list.index(set_speed)][turning_point_mass]:.5f}")
-
+        if inex_drones<0:
+            if idx in ex_system :
+                print(f"Excluded {name}: System is excluded and had a loss of {loss[speed_list.index(set_speed)][turning_point_mass]:.5f}")
+                continue  # Skip to the next system
+            else:
+                print(f"Loss of {name}: {loss[speed_list.index(set_speed)][turning_point_mass]:.5f}")
+        else: 
+            print(f"Loss of {name}: {loss[speed_list.index(set_speed)][turning_point_mass]:.5f}")
     

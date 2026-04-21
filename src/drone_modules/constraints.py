@@ -27,7 +27,7 @@ def constraints( drones,total_length, water, speed):
 
         n_dr_length = round(cell_length/length)
         n_drones = round(min_water_per_sqrM/water_per_sqrm) * n_dr_length
-        wpsqrm_ndrones= n_drones*water_per_sqrm
+        # wpsqrm_ndrones= n_drones*water_per_sqrm
         
         if drones < n_drones:
             print(f"{drones} drones aren´t enough to extinguish a fire in a length of {cell_length} meter")

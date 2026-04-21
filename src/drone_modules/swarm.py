@@ -1,6 +1,7 @@
 import math
 import numpy as np
 from typing import List
+from drone_modules.coop_math import DroneCoopMath
 
 class Optimization:
     def __init__(self):
@@ -29,9 +30,15 @@ class Optimization:
 
         return Calc_result
 
-    def Optimization_losses(self, Achievemnt_system):
-        max_value = np.max(Achievemnt_system)
-        # losses = max_value - val for val in Achievemnt_system
-        losses = max_value - Achievemnt_system
-        
-        return losses
+    def Optimization_losses(self, all_achieves):
+        all_losses = []
+        ccm = DroneCoopMath(plot_2D=False, plot_3D=False)
+
+        for achives in all_achieves:
+            t_v, t_m =ccm.turning_point(achives)
+            opt_value = achives[t_v, t_m]
+            # losses = max_value - val for val in Achievemnt_system
+            losses = abs(opt_value - achives)
+            all_losses.append(losses)
+            
+        return all_losses

@@ -51,7 +51,7 @@ class CarCoopMath:
 
     def file_output(self, all_losses: List[List[float]],all_achives: List[List[float]], speeds: List[int], name: str, data_names: List[str]):
     
-
+        losses_t=False
         filename = f"{name}.csv"
         with open(filename, "w") as file:
             file.write("\t".join(data_names + ["Speed"]) + "\n")
@@ -64,25 +64,25 @@ class CarCoopMath:
         # for losses, label in zip(all_losses, data_names):
         for achives, label in zip(all_achives, data_names):
             plt.plot(speeds, achives, label=label)
-        plt.xlabel("Speed (km/h)")
-        plt.ylabel("achive (%)")
-        plt.title("Achives for all systems")
+        plt.xlabel("Speed [km/h]")
+        plt.ylabel("Objective value")
+        plt.title("Objective values for all systems")
         plt.legend()
         plt.grid(True)
         plt.tight_layout()
-        plt.savefig(f"{name}.png")
+        plt.savefig(f"{name}_objective_values.png")
         plt.show()
-
-        for losses, label in zip(all_losses, data_names):
-            plt.plot(speeds, losses, label=label)
-        plt.xlabel("Speed (km/h)")
-        plt.ylabel("Loss (%)")
-        plt.title("Losses for all systems")
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
-        plt.savefig(f"{name}.png")
-        plt.show()
+        if losses_t:
+            for losses, label in zip(all_losses, data_names):
+                plt.plot(speeds, losses, label=label)
+            plt.xlabel("Speed (km/h)")
+            plt.ylabel("Loss (%)")
+            plt.title("Losses for all systems")
+            plt.legend()
+            plt.grid(True)
+            plt.tight_layout()
+            plt.savefig(f"{name}.png")
+            plt.show()
     
     
     def performance_values(self, all_data: List[List[float]]):
